@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Board Form</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+
+<body>
+
+    <div th:replace="layout/header::header"></div>
+
+    <div class="container">
+       
+        <div class="user-info">
+            <h2>회원정보</h2>
+            <form>
+               <input class="form-control" id="user-idx" type="text" th:value="${user.idx}" hidden="true">
+               <div class="form-group">
+                   <input class="form-control" id="user-email" type="email" th:value="${user.email}" disabled><br/>
+               </div>
+              <div class="form-group">
+                   <input class="form-control" id="user-name" type="text" th:value="${user.name}" disabled><br/>
+               </div>
+              <div class="form-group">
+                   <input class="form-control" id="user-password" type="password" th:value="${user.password}"><br/>
+               </div>
+            </form>
+            <button type="button" class="btn btn-primary" id="btn-register">회원정보 갱신</button>
+        </div>
+       
+       
+        <div class="page-header">
+            <h1>게시글 제목</h1>
+        </div>
+
+        
+        <div class="pull-right" style="width:100px ; margin: 10px 0;">
+            <a href="/board" class="btn btn-primary">등록</a>
+        </div>
+        <br/><br/><br/>
+        <div id="mainHide">
+            <table class="table table-horizontal table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <td>#</td>
+                        <td>서비스 분류</td>
+                        <td>제목</td>
+                        <td>작성 날짜</td>
+                        <td>수정 날짜</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="board : ${boardList}">
+                        <td th:text="${board.idx}"></td>
+                        <td th:text="${board.boardType.value}"></td>
+                        <td>
+                            <a th:href="'/board?idx='+${board.idx}" th:text="${board.title}"></a>
+                        </td>
+                        <td th:text="${board.createdDate} ? ${#temporals.format(board.createdDate,'yyyy-MM-dd HH:mm')} : ${board.createdDate}"></td>
+                        <td th:text="${board.updatedDate} ? ${#temporals.format(board.updatedDate,'yyyy-MM-dd HH:mm')} : ${board.updatedDate}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagenation -->
+        <nav arial-label="page navigation" style="text-align:center">
+            <ul class="pagination justify-content-center" th:with="startNumber=${T(Math).floor(boardList.number/10)}*10+1, endNumber=(${boardList.totalPages} > ${startNumber}+9) ? ${startNumber}+9 : ${boardList.totalPages}">
+                <li class="page-item">
+                    <a class="page-link" href="/board/list?page=1">&laquo;</a>
+                </li>
+                <li class="page-item" th:style="${boardList.first} ? 'display:none'">
+                    <a class="page-link" aria-label="previous" th:href="@{/board/list(page=${boardList.number})}">&lsaquo;</a>
+                </li>
+                <li class="page-item" th:each="page : ${#numbers.sequence(startNumber, endNumber)}" th:class="(${page}==${boardList.number}+1) ? 'active'">
+                    <a class="page-link" th:href="@{/board/list(page=${page})}" th:text="${page}">
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+                <li class="page-item" th:style="${boardList.last} ? display:none">
+                    <a class="page-link" th:href="@{/board/list(page=${boardList.number}+2)}">&rsaquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" th:href="@{/board/list(page=${boardList.totalPages})}">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+        
+        
+    </div>
+    
+    
+    
+    <div th:replace="layout/footer::footer"></div>
+    
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+
+</body>
+
+</html>
